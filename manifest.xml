@@ -1,0 +1,20 @@
+<package>
+  <description brief="Common implementation for GPS management">
+  
+  </description>
+  <author>Gabriel Arjones/arjones@arjones.com</author>
+  <license></license>
+  <url>http://</url>
+  <logo>http://</logo>
+  <depend package="base/cmake" />
+  <!--
+   To add any dependencies use the depend tag
+  <depend package="dummy-dependency-0" />
+	...
+  <depend package="dummy-dependency-n-1" />
+  <depend package="dummy-dependency-n" />
+  -->
+  <depend package="gdal" />
+  <depend package="proj" />
+  <depend package="base/types" />
+</package>
