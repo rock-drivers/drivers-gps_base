@@ -1,9 +1,9 @@
-#ifndef _DUMMYPROJECT_DUMMY_HPP_
-#define _DUMMYPROJECT_DUMMY_HPP_
+#ifndef _GPS_BASE_DRIVER_HPP_
+#define _GPS_BASE_DRIVER_HPP_
 
 namespace gps_base
 {
-    class DummyClass
+    class Driver
     {
         public: 
             /**
@@ -15,4 +15,4 @@ namespace gps_base
 
 } // end namespace gps_base
 
-#endif // _DUMMYPROJECT_DUMMY_HPP_
+#endif // _GPS_BASE_DRIVER_HPP_

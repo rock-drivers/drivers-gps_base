@@ -1,10 +1,10 @@
-#include "Dummy.hpp"
+#include "Driver.hpp"
 #include <iostream>
 
 using namespace std;
 using namespace gps_base;
 
-void DummyClass::welcome()
+void Driver::welcome()
 {
     cout << "You successfully compiled and executed DummyProject. Welcome!" << endl;
 }

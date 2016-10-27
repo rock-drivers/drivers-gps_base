@@ -1,4 +1,4 @@
 rock_library(gps_base
-    SOURCES Dummy.cpp
-    HEADERS Dummy.hpp)
+    SOURCES Driver.cpp
+    HEADERS Driver.hpp)
 
