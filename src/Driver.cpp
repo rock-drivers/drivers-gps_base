@@ -1,5 +1,6 @@
 #include "Driver.hpp"
 #include <iostream>
+#include <gps_base/BaseTypes.hpp>
 
 using namespace std;
 using namespace gps_base;
