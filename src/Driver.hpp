@@ -1,16 +1,32 @@
 #ifndef _GPS_BASE_DRIVER_HPP_
 #define _GPS_BASE_DRIVER_HPP_
 
+#include <base/samples/RigidBodyState.hpp>
+#include <gps_base/BaseTypes.hpp>
+
+class OGRCoordinateTransformation;
+
 namespace gps_base
 {
     class Driver
     {
-        public: 
-            /**
-             * Print a welcome to stdout
-             * \return nothing
-             */
-            void welcome();
+        private:
+            int utm_zone;
+            bool utm_north;
+            base::Position origin;
+            OGRCoordinateTransformation *coTransform;
+
+            void createCoTransform();
+
+        public:
+            Driver();
+
+            void setUtmZone(int zone);
+            void setUtmNorth(bool north);
+            int getUtmZone();
+            bool getUtmNorth();
+
+            bool convertSolutionToRBS(gps_base::Solution solution, base::samples::RigidBodyState &position);
     };
 
 } // end namespace gps_base
