@@ -26,7 +26,7 @@ namespace gps_base
             int getUtmZone();
             bool getUtmNorth();
 
-            bool convertSolutionToRBS(gps_base::Solution solution, base::samples::RigidBodyState &position);
+            bool convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position);
     };
 
 } // end namespace gps_base

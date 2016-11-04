@@ -51,7 +51,7 @@ bool Driver::getUtmNorth()
     return this->utm_north;
 }
 
-bool Driver::convertSolutionToRBS(gps_base::Solution solution, base::samples::RigidBodyState &position)
+bool Driver::convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position)
 {
     // if there is a valid reading, then write it to position readings port
     if (solution.positionType != gps_base::NO_SOLUTION)
