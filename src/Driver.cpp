@@ -9,6 +9,7 @@ Driver::Driver()
 {
     this->utm_zone = 32;
     this->utm_north = true;
+    this->origin = base::Position::Zero();
     createCoTransform();
 }
 
@@ -49,6 +50,16 @@ int Driver::getUtmZone()
 bool Driver::getUtmNorth()
 {
     return this->utm_north;
+}
+
+base::Position Driver::getOrigin()
+{
+    return this->origin;
+}
+
+void Driver::setOrigin(base::Position origin)
+{
+    this->origin = origin;
 }
 
 bool Driver::convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position)
