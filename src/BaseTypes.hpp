@@ -1,10 +1,7 @@
 #ifndef _GPS_BASE_BASETYPES_HPP_
 #define _GPS_BASE_BASETYPES_HPP_
 
-#ifndef __orogen
 #include <vector>
-#endif
-
 #include <base/Time.hpp>
 
 namespace gps_base
@@ -39,10 +36,8 @@ namespace gps_base
         double deviationLatitude;
         double deviationLongitude;
         double deviationAltitude;
-#ifndef __orogen
-	Solution()
-	    : positionType(INVALID) {}
-#endif
+        Solution()
+	        : positionType(INVALID) {}
     };
 
     struct Position {
@@ -54,10 +49,8 @@ namespace gps_base
         double altitude;
         double geoidalSeparation;
         double ageOfDifferentialCorrections;
-#ifndef __orogen
-	Position()
-	    : positionType(INVALID) {}
-#endif
+	    Position()
+	        : positionType(INVALID) {}
     };
 
     struct Errors {
@@ -86,7 +79,6 @@ namespace gps_base
         int azimuth;
         double SNR;
 
-#ifndef __orogen
         static CONSTELLATIONS getConstellationFromPRN(int prn)
         {
             if (prn < 33)
@@ -101,7 +93,6 @@ namespace gps_base
         {
 	        return getConstellationFromPRN(PRN);
         }
-#endif
     };
 
     struct SatelliteInfo {
@@ -114,10 +105,8 @@ namespace gps_base
         int hAccel;
         int vSpeed;
         int vAccel;
-#ifndef __orogen
         UserDynamics()
             : hSpeed(0), hAccel(0), vSpeed(0), vAccel(0) {}
-#endif
     };
 
     struct ConstellationInfo {
