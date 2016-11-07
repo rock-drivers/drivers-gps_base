@@ -21,9 +21,9 @@ namespace gps_base
     };
 
     struct Time {
-      base::Time cpu_time;
-      base::Time gps_time;
-      double processing_latency;
+        base::Time cpu_time;
+        base::Time gps_time;
+        double processing_latency;
     };
 
     struct Solution {
@@ -89,17 +89,17 @@ namespace gps_base
 #ifndef __orogen
         static CONSTELLATIONS getConstellationFromPRN(int prn)
         {
-                if (prn < 33)
-                    return CONSTELLATION_GPS;
-                else if (prn < 65)
-                    return CONSTELLATION_SBAS;
-                else
-                    return CONSTELLATION_GLONASS;
+            if (prn < 33)
+                return CONSTELLATION_GPS;
+            else if (prn < 65)
+                return CONSTELLATION_SBAS;
+            else
+                return CONSTELLATION_GLONASS;
         }
 
         CONSTELLATIONS getConstellation() const
         {
-	    return getConstellationFromPRN(PRN);
+	        return getConstellationFromPRN(PRN);
         }
 #endif
     };
