@@ -1,7 +1,13 @@
-rock_library(gps_base
-    SOURCES Dummy.cpp
-    HEADERS Dummy.hpp)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+find_package(GDAL REQUIRED)
+add_definitions(${GDAL_CFLAGS})
+include_directories(${GDAL_INCLUDE_DIRS})
+link_directories(${GDAL_LIBRARY_DIRS})
 
-rock_executable(gps_base_bin Main.cpp
-    DEPS gps_base)
+rock_library(gps_base
+    SOURCES UTMConverter.cpp
+    HEADERS UTMConverter.hpp BaseTypes.hpp
+    DEPS_PKGCONFIG base-types)
+
+target_link_libraries(gps_base ${GDAL_LIBRARIES})
 
