@@ -1,5 +1,5 @@
-#ifndef _GPS_BASE_DRIVER_HPP_
-#define _GPS_BASE_DRIVER_HPP_
+#ifndef _GPS_BASE_UTMCONVERTER_HPP_
+#define _GPS_BASE_UTMCONVERTER_HPP_
 
 #include <base/samples/RigidBodyState.hpp>
 #include <gps_base/BaseTypes.hpp>
@@ -8,7 +8,7 @@ class OGRCoordinateTransformation;
 
 namespace gps_base
 {
-    class Driver
+    class UTMConverter
     {
         private:
             int utm_zone;
@@ -19,7 +19,7 @@ namespace gps_base
             void createCoTransform();
 
         public:
-            Driver();
+            UTMConverter();
 
             void setUtmZone(int zone);
             void setUtmNorth(bool north);
@@ -33,4 +33,4 @@ namespace gps_base
 
 } // end namespace gps_base
 
-#endif // _GPS_BASE_DRIVER_HPP_
+#endif // _GPS_BASE_UTMCONVERTER_HPP_

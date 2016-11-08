@@ -1,11 +1,11 @@
-#include "Driver.hpp"
+#include "UTMConverter.hpp"
 #include <iostream>
 #include <ogr_spatialref.h>
 
 using namespace std;
 using namespace gps_base;
 
-Driver::Driver()
+UTMConverter::UTMConverter()
 {
     this->utm_zone = 32;
     this->utm_north = true;
@@ -13,7 +13,7 @@ Driver::Driver()
     createCoTransform();
 }
 
-void Driver::createCoTransform()
+void UTMConverter::createCoTransform()
 {
     OGRSpatialReference oSourceSRS;
     OGRSpatialReference oTargetSRS;
@@ -30,39 +30,39 @@ void Driver::createCoTransform()
     }
 }
 
-void Driver::setUtmZone(int zone)
+void UTMConverter::setUtmZone(int zone)
 {
     this->utm_zone = zone;
     createCoTransform();
 }
 
-void Driver::setUtmNorth(bool north)
+void UTMConverter::setUtmNorth(bool north)
 {
     this->utm_north = north;
     createCoTransform();
 }
 
-int Driver::getUtmZone()
+int UTMConverter::getUtmZone()
 {
     return this->utm_zone;
 }
 
-bool Driver::getUtmNorth()
+bool UTMConverter::getUtmNorth()
 {
     return this->utm_north;
 }
 
-base::Position Driver::getOrigin()
+base::Position UTMConverter::getOrigin()
 {
     return this->origin;
 }
 
-void Driver::setOrigin(base::Position origin)
+void UTMConverter::setOrigin(base::Position origin)
 {
     this->origin = origin;
 }
 
-bool Driver::convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position)
+bool UTMConverter::convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position)
 {
     // if there is a valid reading, then write it to position readings port
     if (solution.positionType != gps_base::NO_SOLUTION)
