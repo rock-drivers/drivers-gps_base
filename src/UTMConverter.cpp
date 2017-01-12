@@ -10,6 +10,7 @@ UTMConverter::UTMConverter()
     this->utm_zone = 32;
     this->utm_north = true;
     this->origin = base::Position::Zero();
+    this->coTransform = NULL;
     createCoTransform();
 }
 
@@ -22,12 +23,13 @@ void UTMConverter::createCoTransform()
     oTargetSRS.SetWellKnownGeogCS("WGS84");
     oTargetSRS.SetUTM(this->utm_zone, this->utm_north);
 
-    coTransform = OGRCreateCoordinateTransformation(&oSourceSRS, &oTargetSRS);
-
-    if (coTransform == NULL)
-    {
+    OGRCoordinateTransformation* newTransform =
+        OGRCreateCoordinateTransformation(&oSourceSRS, &oTargetSRS);
+    if (newTransform == NULL)
         throw runtime_error("Failed to initialize CoordinateTransform");
-    }
+
+    delete coTransform;
+    coTransform = newTransform;
 }
 
 void UTMConverter::setUtmZone(int zone)
