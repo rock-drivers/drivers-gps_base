@@ -6,11 +6,11 @@ using namespace std;
 using namespace gps_base;
 
 UTMConverter::UTMConverter()
+    : utm_zone(32)
+    , utm_north(true)
+    , origin(base::Position::Zero())
+    , coTransform(NULL)
 {
-    this->utm_zone = 32;
-    this->utm_north = true;
-    this->origin = base::Position::Zero();
-    this->coTransform = NULL;
     createCoTransform();
 }
 
