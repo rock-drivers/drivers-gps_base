@@ -91,7 +91,12 @@ base::samples::RigidBodyState UTMConverter::convertToUTM(const gps_base::Solutio
 
 base::samples::RigidBodyState UTMConverter::convertToNWU(const gps_base::Solution &solution) const
 {
-    base::samples::RigidBodyState position = convertToUTM(solution);
+    return convertToNWU(convertToUTM(solution));
+}
+
+base::samples::RigidBodyState UTMConverter::convertToNWU(const base::samples::RigidBodyState &utm) const
+{
+    base::samples::RigidBodyState position = utm;
     double easting  = position.position.x();
     double northing = position.position.y();
     position.position.x() = northing;

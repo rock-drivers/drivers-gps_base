@@ -57,6 +57,10 @@ namespace gps_base
              * timestamp updated) if there is no solution
              */
             base::samples::RigidBodyState convertToNWU(const gps_base::Solution &solution) const;
+
+            /** Convert a UTM-converted GPS solution into NWU coordinates (Rock's convention)
+             */
+            base::samples::RigidBodyState convertToNWU(const base::samples::RigidBodyState &solution) const;
     };
 
 } // end namespace gps_base
