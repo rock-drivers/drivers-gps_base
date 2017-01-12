@@ -44,47 +44,59 @@ void UTMConverter::setUTMNorth(bool north)
     createCoTransform();
 }
 
-int UTMConverter::getUTMZone()
+int UTMConverter::getUTMZone() const
 {
     return this->utm_zone;
 }
 
-bool UTMConverter::getUTMNorth()
+bool UTMConverter::getUTMNorth() const
 {
     return this->utm_north;
 }
 
-base::Position UTMConverter::getOrigin()
+base::Position UTMConverter::getNWUOrigin() const
 {
     return this->origin;
 }
 
-void UTMConverter::setOrigin(base::Position origin)
+void UTMConverter::setNWUOrigin(base::Position origin)
 {
     this->origin = origin;
 }
 
-bool UTMConverter::convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position)
+base::samples::RigidBodyState UTMConverter::convertToUTM(const gps_base::Solution &solution) const
 {
+    base::samples::RigidBodyState position;
+    position.time = solution.time;
+
+    if (solution.positionType == gps_base::NO_SOLUTION)
+        return position;
+
     // if there is a valid reading, then write it to position readings port
-    if (solution.positionType != gps_base::NO_SOLUTION)
-    {
-        double la = solution.latitude;
-        double lo = solution.longitude;
-        double alt = solution.altitude;
+    double northing = solution.latitude;
+    double easting  = solution.longitude;
+    double altitude = solution.altitude;
 
-        coTransform->Transform(1, &lo, &la, &alt);
+    coTransform->Transform(1, &easting, &northing, &altitude);
 
-        position.time = solution.time;
-        position.position.x() = lo - origin.x();
-        position.position.y() = la - origin.y();
-        position.position.z() = alt - origin.z();
-        position.cov_position(0, 0) = solution.deviationLongitude * solution.deviationLongitude;
-        position.cov_position(1, 1) = solution.deviationLatitude * solution.deviationLatitude;
-        position.cov_position(2, 2) = solution.deviationAltitude * solution.deviationAltitude;
+    position.time = solution.time;
+    position.position.x() = easting;
+    position.position.y() = northing;
+    position.position.z() = altitude;
+    position.cov_position(0, 0) = solution.deviationLongitude * solution.deviationLongitude;
+    position.cov_position(1, 1) = solution.deviationLatitude * solution.deviationLatitude;
+    position.cov_position(2, 2) = solution.deviationAltitude * solution.deviationAltitude;
+    return position;
+}
 
-        return true;
-    }
-
-    return false;
+base::samples::RigidBodyState UTMConverter::convertToNWU(const gps_base::Solution &solution) const
+{
+    base::samples::RigidBodyState position = convertToUTM(solution);
+    double easting  = position.position.x();
+    double northing = position.position.y();
+    position.position.x() = northing;
+    position.position.y() = 1000000 - easting;
+    position.position -= origin;
+    std::swap(position.cov_position(0, 0), position.cov_position(1, 1));
+    return position;
 }
