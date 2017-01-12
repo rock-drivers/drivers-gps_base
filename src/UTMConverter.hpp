@@ -21,13 +21,21 @@ namespace gps_base
         public:
             UTMConverter();
 
-            void setUtmZone(int zone);
-            void setUtmNorth(bool north);
-            int getUtmZone();
-            bool getUtmNorth();
+            /** Sets the UTM zone
+             */
+            void setUTMZone(int zone);
             void setOrigin(base::Position origin);
             base::Position getOrigin();
 
+            /** Sets the UTM zone
+             */
+            void setUTMNorth(bool north);
+            
+            /** Get the UTM zone */
+            int getUTMZone();
+
+            /** Get whether we're north or south of the equator */
+            bool getUTMNorth();
             bool convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position);
     };
 

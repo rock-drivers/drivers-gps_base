@@ -32,24 +32,24 @@ void UTMConverter::createCoTransform()
     coTransform = newTransform;
 }
 
-void UTMConverter::setUtmZone(int zone)
+void UTMConverter::setUTMZone(int zone)
 {
     this->utm_zone = zone;
     createCoTransform();
 }
 
-void UTMConverter::setUtmNorth(bool north)
+void UTMConverter::setUTMNorth(bool north)
 {
     this->utm_north = north;
     createCoTransform();
 }
 
-int UTMConverter::getUtmZone()
+int UTMConverter::getUTMZone()
 {
     return this->utm_zone;
 }
 
-bool UTMConverter::getUtmNorth()
+bool UTMConverter::getUTMNorth()
 {
     return this->utm_north;
 }

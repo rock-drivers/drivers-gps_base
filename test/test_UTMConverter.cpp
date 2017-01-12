@@ -14,12 +14,11 @@ BOOST_AUTO_TEST_CASE(it_should_output_utm_position)
     gps_base::Solution solution;
     base::samples::RigidBodyState pos;
 
-    converter.setUtmZone(24);
-    converter.setUtmNorth(false);
-
     solution.latitude = -13.057361;
     solution.longitude = -38.649902;
     solution.altitude = 0.0;
+    converter.setUTMZone(24);
+    converter.setUTMNorth(false);
     solution.positionType = gps_base::AUTONOMOUS;
     solution.deviationLatitude = 0.2;
     solution.deviationLongitude = 0.33;
