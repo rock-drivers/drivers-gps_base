@@ -6,10 +6,11 @@ using namespace std;
 using namespace gps_base;
 
 UTMConverter::UTMConverter()
+    : utm_zone(32)
+    , utm_north(true)
+    , origin(base::Position::Zero())
+    , coTransform(NULL)
 {
-    this->utm_zone = 32;
-    this->utm_north = true;
-    this->origin = base::Position::Zero();
     createCoTransform();
 }
 
@@ -22,67 +23,85 @@ void UTMConverter::createCoTransform()
     oTargetSRS.SetWellKnownGeogCS("WGS84");
     oTargetSRS.SetUTM(this->utm_zone, this->utm_north);
 
-    coTransform = OGRCreateCoordinateTransformation(&oSourceSRS, &oTargetSRS);
-
-    if (coTransform == NULL)
-    {
+    OGRCoordinateTransformation* newTransform =
+        OGRCreateCoordinateTransformation(&oSourceSRS, &oTargetSRS);
+    if (newTransform == NULL)
         throw runtime_error("Failed to initialize CoordinateTransform");
-    }
+
+    delete coTransform;
+    coTransform = newTransform;
 }
 
-void UTMConverter::setUtmZone(int zone)
+void UTMConverter::setUTMZone(int zone)
 {
     this->utm_zone = zone;
     createCoTransform();
 }
 
-void UTMConverter::setUtmNorth(bool north)
+void UTMConverter::setUTMNorth(bool north)
 {
     this->utm_north = north;
     createCoTransform();
 }
 
-int UTMConverter::getUtmZone()
+int UTMConverter::getUTMZone() const
 {
     return this->utm_zone;
 }
 
-bool UTMConverter::getUtmNorth()
+bool UTMConverter::getUTMNorth() const
 {
     return this->utm_north;
 }
 
-base::Position UTMConverter::getOrigin()
+base::Position UTMConverter::getNWUOrigin() const
 {
     return this->origin;
 }
 
-void UTMConverter::setOrigin(base::Position origin)
+void UTMConverter::setNWUOrigin(base::Position origin)
 {
     this->origin = origin;
 }
 
-bool UTMConverter::convertSolutionToRBS(const gps_base::Solution &solution, base::samples::RigidBodyState &position)
+base::samples::RigidBodyState UTMConverter::convertToUTM(const gps_base::Solution &solution) const
 {
+    base::samples::RigidBodyState position;
+    position.time = solution.time;
+
+    if (solution.positionType == gps_base::NO_SOLUTION)
+        return position;
+
     // if there is a valid reading, then write it to position readings port
-    if (solution.positionType != gps_base::NO_SOLUTION)
-    {
-        double la = solution.latitude;
-        double lo = solution.longitude;
-        double alt = solution.altitude;
+    double northing = solution.latitude;
+    double easting  = solution.longitude;
+    double altitude = solution.altitude;
 
-        coTransform->Transform(1, &lo, &la, &alt);
+    coTransform->Transform(1, &easting, &northing, &altitude);
 
-        position.time = solution.time;
-        position.position.x() = lo - origin.x();
-        position.position.y() = la - origin.y();
-        position.position.z() = alt - origin.z();
-        position.cov_position(0, 0) = solution.deviationLongitude * solution.deviationLongitude;
-        position.cov_position(1, 1) = solution.deviationLatitude * solution.deviationLatitude;
-        position.cov_position(2, 2) = solution.deviationAltitude * solution.deviationAltitude;
+    position.time = solution.time;
+    position.position.x() = easting;
+    position.position.y() = northing;
+    position.position.z() = altitude;
+    position.cov_position(0, 0) = solution.deviationLongitude * solution.deviationLongitude;
+    position.cov_position(1, 1) = solution.deviationLatitude * solution.deviationLatitude;
+    position.cov_position(2, 2) = solution.deviationAltitude * solution.deviationAltitude;
+    return position;
+}
 
-        return true;
-    }
+base::samples::RigidBodyState UTMConverter::convertToNWU(const gps_base::Solution &solution) const
+{
+    return convertToNWU(convertToUTM(solution));
+}
 
-    return false;
+base::samples::RigidBodyState UTMConverter::convertToNWU(const base::samples::RigidBodyState &utm) const
+{
+    base::samples::RigidBodyState position = utm;
+    double easting  = position.position.x();
+    double northing = position.position.y();
+    position.position.x() = northing;
+    position.position.y() = 1000000 - easting;
+    position.position -= origin;
+    std::swap(position.cov_position(0, 0), position.cov_position(1, 1));
+    return position;
 }
