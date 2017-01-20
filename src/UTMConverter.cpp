@@ -83,6 +83,7 @@ base::samples::RigidBodyState UTMConverter::convertToUTM(const gps_base::Solutio
     position.position.x() = easting;
     position.position.y() = northing;
     position.position.z() = altitude;
+    position.cov_position = 1.0 * base::Matrix3d::Identity();
     position.cov_position(0, 0) = solution.deviationLongitude * solution.deviationLongitude;
     position.cov_position(1, 1) = solution.deviationLatitude * solution.deviationLatitude;
     position.cov_position(2, 2) = solution.deviationAltitude * solution.deviationAltitude;
