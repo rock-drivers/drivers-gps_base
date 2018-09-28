@@ -14,7 +14,8 @@ namespace gps_base
         DIFFERENTIAL = 2,
         INVALID      = 3,
         RTK_FIXED    = 4,
-        RTK_FLOAT    = 5
+        RTK_FLOAT    = 5,
+        OMNISTAR     = 7
     };
 
     struct Time {
