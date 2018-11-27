@@ -65,8 +65,7 @@ BOOST_AUTO_TEST_CASE(it_propagates_the_deviations)
 
     gps_base::UTMConverter converter;
 
-    base::samples::RigidBodyState pos;
-    pos = converter.convertToUTM(solution);
+    base::samples::RigidBodyState pos = converter.convertToUTM(solution);
     BOOST_REQUIRE_CLOSE(0.33*0.33, pos.cov_position(0, 0), 0.0001);
     BOOST_REQUIRE_CLOSE(0.2*0.2,   pos.cov_position(1, 1), 0.0001);
     BOOST_REQUIRE_CLOSE(0.27*0.27, pos.cov_position(2, 2), 0.0001);
@@ -74,6 +73,20 @@ BOOST_AUTO_TEST_CASE(it_propagates_the_deviations)
     BOOST_REQUIRE_CLOSE(0.2*0.2,   pos.cov_position(0, 0), 0.0001);
     BOOST_REQUIRE_CLOSE(0.33*0.33, pos.cov_position(1, 1), 0.0001);
     BOOST_REQUIRE_CLOSE(0.27*0.27, pos.cov_position(2, 2), 0.0001);
+}
+
+BOOST_AUTO_TEST_CASE(it_initializes_non_diagonal_covariance_elements_to_zero)
+{
+    gps_base::Solution solution;
+    solution.positionType = gps_base::AUTONOMOUS;
+
+    gps_base::UTMConverter converter;
+
+    base::samples::RigidBodyState pos = converter.convertToUTM(solution);
+    for (int i = 0; i < 3; ++i)
+        for (int j = 0; j < 3; ++j)
+            if (i != j)
+                BOOST_REQUIRE_EQUAL(0, pos.cov_position(i, j));
 }
 
 BOOST_AUTO_TEST_CASE(it_propagates_the_timestamp)
