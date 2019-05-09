@@ -15,6 +15,32 @@ UTMConverter::UTMConverter()
     createCoTransform();
 }
 
+UTMConverter::UTMConverter(UTMConversionParameters const& parameters)
+    : utm_zone(parameters.utm_zone)
+    , utm_north(parameters.utm_north)
+    , origin(parameters.nwu_origin)
+    , utm2latlon(nullptr)
+    , latlon2utm(nullptr)
+{
+    createCoTransform();
+}
+
+void UTMConverter::setParameters(UTMConversionParameters const& parameters)
+{
+    utm_zone = parameters.utm_zone;
+    utm_north = parameters.utm_north;
+    origin = parameters.nwu_origin;
+}
+
+UTMConversionParameters UTMConverter::getParameters() const
+{
+    UTMConversionParameters parameters;
+    parameters.utm_zone = utm_zone;
+    parameters.utm_north = utm_north;
+    parameters.nwu_origin = origin;
+    return parameters;
+}
+
 void UTMConverter::createCoTransform()
 {
     OGRSpatialReference latlonSRS;

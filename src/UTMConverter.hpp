@@ -20,6 +20,11 @@ namespace gps_base
 
         public:
             UTMConverter();
+            UTMConverter(UTMConversionParameters const& parameters);
+
+            void setParameters(UTMConversionParameters const& parameters);
+
+            UTMConversionParameters getParameters() const;
 
             /** Sets the UTM zone
              */
