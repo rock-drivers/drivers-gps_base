@@ -72,6 +72,42 @@ BOOST_AUTO_TEST_CASE(it_applies_the_origin_when_dealing_with_NWU)
     BOOST_REQUIRE_CLOSE(solution.altitude, 2, 0.0001);
 }
 
+BOOST_AUTO_TEST_CASE(it_can_be_set_up_through_the_UTMConversionParameters_structure)
+{
+    gps_base::Solution solution;
+    solution.positionType = gps_base::AUTONOMOUS;
+    solution.latitude = -13.057361;
+    solution.longitude = -38.649902;
+    solution.altitude = 2.0;
+
+    gps_base::UTMConverter converter;
+    gps_base::UTMConversionParameters parameters;
+    parameters.utm_zone = 24;
+    parameters.utm_north = false;
+    parameters.nwu_origin = base::Position(8550000, 400000, 0);
+    converter.setParameters(parameters);
+
+    base::samples::RigidBodyState pos;
+    pos = converter.convertToUTM(solution);
+    BOOST_REQUIRE_CLOSE(pos.position.x(), 537956.57943, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.y(), 8556494.7274, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.z(), 2, 0.0001);
+    solution = converter.convertUTMToGPS(pos);
+    BOOST_REQUIRE_CLOSE(solution.latitude, -13.057361, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.longitude, -38.649902, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.altitude, 2, 0.0001);
+
+    pos = converter.convertToNWU(solution);
+    BOOST_REQUIRE_CLOSE(pos.position.x(), 6494.7274, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.y(), 62043.420570012648, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.z(), 2, 0.0001);
+    solution = converter.convertNWUToGPS(pos);
+    BOOST_REQUIRE_CLOSE(solution.latitude, -13.057361, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.longitude, -38.649902, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.altitude, 2, 0.0001);
+}
+
+
 BOOST_AUTO_TEST_CASE(it_propagates_the_deviations)
 {
     gps_base::Solution solution;

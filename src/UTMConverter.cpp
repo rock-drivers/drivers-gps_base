@@ -30,6 +30,7 @@ void UTMConverter::setParameters(UTMConversionParameters const& parameters)
     utm_zone = parameters.utm_zone;
     utm_north = parameters.utm_north;
     origin = parameters.nwu_origin;
+    createCoTransform();
 }
 
 UTMConversionParameters UTMConverter::getParameters() const
