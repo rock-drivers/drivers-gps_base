@@ -8,13 +8,13 @@ namespace gps_base
 {
     enum GPS_SOLUTION_TYPES
     {
-        NO_SOLUTION  = 0,
-        AUTONOMOUS_2D  = 6, // is 6 for historical reasons
-        AUTONOMOUS   = 1,
-        DIFFERENTIAL = 2,
-        INVALID      = 3,
-        RTK_FIXED    = 4,
-        RTK_FLOAT    = 5
+        NO_SOLUTION    = 0, //No GPS solution found
+        AUTONOMOUS_2D  = 6, //Like AUTONOMOUS, but solution doesn't provide height information. Is 6 for historical reasons
+        AUTONOMOUS     = 1, //No correction
+        DIFFERENTIAL   = 2, //Atmospheric correction is used e.g. as provided by a Satellite or Ground Based Augmentation System
+        INVALID        = 3, //Correction result is invalid
+        RTK_FIXED      = 4, //Complete RTK correction
+        RTK_FLOAT      = 5  //Real Time Kinematics correction with undetermined phase shift
     };
 
     struct Time {
