@@ -14,12 +14,17 @@ namespace gps_base
             int utm_zone;
             bool utm_north;
             base::Position origin;
-            OGRCoordinateTransformation *coTransform;
+            OGRCoordinateTransformation *utm2latlon, *latlon2utm;
 
             void createCoTransform();
 
         public:
             UTMConverter();
+            UTMConverter(UTMConversionParameters const& parameters);
+
+            void setParameters(UTMConversionParameters const& parameters);
+
+            UTMConversionParameters getParameters() const;
 
             /** Sets the UTM zone
              */
@@ -28,7 +33,7 @@ namespace gps_base
             /** Sets the UTM zone
              */
             void setUTMNorth(bool north);
-            
+
             /** Get the UTM zone */
             int getUTMZone() const;
 
@@ -51,6 +56,11 @@ namespace gps_base
              */
             base::samples::RigidBodyState convertToUTM(const gps_base::Solution &solution) const;
 
+            /** Convert a UTM position into latitude/longitude with deviations
+             * The Solutions' solution type field is not set by this function
+             */
+            gps_base::Solution convertUTMToGPS(const base::samples::RigidBodyState& position) const;
+
             /** Convert a GPS solution into NWU coordinates (Rock's convention)
              *
              * The returned RBS will has all its fields invalidated (only the
@@ -58,9 +68,17 @@ namespace gps_base
              */
             base::samples::RigidBodyState convertToNWU(const gps_base::Solution &solution) const;
 
+            /** Convert NWU coordinates (Rock's convention) into GPS coordinates
+             */
+            gps_base::Solution convertNWUToGPS(const base::samples::RigidBodyState& nwu) const;
+
             /** Convert a UTM-converted GPS solution into NWU coordinates (Rock's convention)
              */
             base::samples::RigidBodyState convertToNWU(const base::samples::RigidBodyState &solution) const;
+
+            /** Convert a NWU position into a UTM position
+             */
+            base::samples::RigidBodyState convertNWUToUTM(const base::samples::RigidBodyState &nwu) const;
     };
 
 } // end namespace gps_base

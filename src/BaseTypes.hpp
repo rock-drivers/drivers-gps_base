@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <base/Time.hpp>
+#include <base/Pose.hpp>
 
 namespace gps_base
 {
@@ -113,6 +114,23 @@ namespace gps_base
         gps_base::SolutionQuality quality;
         gps_base::SatelliteInfo  satellites;
     };
+
+    /**
+     * Set of parameters used to setup GPS-to-local cartesian coordinates
+     * conversion
+     */
+    struct UTMConversionParameters {
+        /** The local origin for UTM-to-NWU conversion
+         */
+        base::Position nwu_origin = base::Position::Zero();
+        /** UTM zone number
+         */
+        int utm_zone = 1;
+        /** North or south of the equator
+         */
+        bool utm_north = true;
+    };
+
 }
 
 #endif // _GPS_BASE_BASETYPES_HPP_

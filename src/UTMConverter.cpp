@@ -9,27 +9,62 @@ UTMConverter::UTMConverter()
     : utm_zone(32)
     , utm_north(true)
     , origin(base::Position::Zero())
-    , coTransform(NULL)
+    , utm2latlon(nullptr)
+    , latlon2utm(nullptr)
 {
     createCoTransform();
 }
 
+UTMConverter::UTMConverter(UTMConversionParameters const& parameters)
+    : utm_zone(parameters.utm_zone)
+    , utm_north(parameters.utm_north)
+    , origin(parameters.nwu_origin)
+    , utm2latlon(nullptr)
+    , latlon2utm(nullptr)
+{
+    createCoTransform();
+}
+
+void UTMConverter::setParameters(UTMConversionParameters const& parameters)
+{
+    utm_zone = parameters.utm_zone;
+    utm_north = parameters.utm_north;
+    origin = parameters.nwu_origin;
+    createCoTransform();
+}
+
+UTMConversionParameters UTMConverter::getParameters() const
+{
+    UTMConversionParameters parameters;
+    parameters.utm_zone = utm_zone;
+    parameters.utm_north = utm_north;
+    parameters.nwu_origin = origin;
+    return parameters;
+}
+
 void UTMConverter::createCoTransform()
 {
-    OGRSpatialReference oSourceSRS;
-    OGRSpatialReference oTargetSRS;
+    OGRSpatialReference latlonSRS;
+    OGRSpatialReference utmSRS;
 
-    oSourceSRS.SetWellKnownGeogCS("WGS84");
-    oTargetSRS.SetWellKnownGeogCS("WGS84");
-    oTargetSRS.SetUTM(this->utm_zone, this->utm_north);
+    latlonSRS.SetWellKnownGeogCS("WGS84");
+    utmSRS.SetWellKnownGeogCS("WGS84");
+    utmSRS.SetUTM(this->utm_zone, this->utm_north);
 
-    OGRCoordinateTransformation* newTransform =
-        OGRCreateCoordinateTransformation(&oSourceSRS, &oTargetSRS);
-    if (newTransform == NULL)
-        throw runtime_error("Failed to initialize CoordinateTransform");
+    OGRCoordinateTransformation* newToUTM =
+        OGRCreateCoordinateTransformation(&latlonSRS, &utmSRS);
+    if (newToUTM == NULL)
+        throw runtime_error("failed to compute coordinate transform from lat/lon to UTM");
 
-    delete coTransform;
-    coTransform = newTransform;
+    OGRCoordinateTransformation* newToLatLon =
+        OGRCreateCoordinateTransformation(&utmSRS, &latlonSRS);
+    if (newToLatLon == NULL)
+        throw runtime_error("failed to compute coordinate transform from UTM to lat/lon");
+
+    delete latlon2utm;
+    latlon2utm = newToUTM;
+    delete utm2latlon;
+    utm2latlon = newToLatLon;
 }
 
 void UTMConverter::setUTMZone(int zone)
@@ -77,7 +112,7 @@ base::samples::RigidBodyState UTMConverter::convertToUTM(const gps_base::Solutio
     double easting  = solution.longitude;
     double altitude = solution.altitude;
 
-    coTransform->Transform(1, &easting, &northing, &altitude);
+    latlon2utm->Transform(1, &easting, &northing, &altitude);
 
     position.time = solution.time;
     position.position.x() = easting;
@@ -90,9 +125,34 @@ base::samples::RigidBodyState UTMConverter::convertToUTM(const gps_base::Solutio
     return position;
 }
 
+gps_base::Solution UTMConverter::convertUTMToGPS(const base::samples::RigidBodyState& position) const
+{
+    // if there is a valid reading, then write it to position readings port
+    double easting  = position.position.x();
+    double northing = position.position.y();
+    double altitude = position.position.z();
+
+    utm2latlon->Transform(1, &easting, &northing, &altitude);
+
+    gps_base::Solution solution;
+    solution.time = position.time;
+    solution.latitude = northing;
+    solution.longitude = easting;
+    solution.altitude = altitude;
+    solution.deviationLongitude = sqrt(position.cov_position(0, 0));
+    solution.deviationLatitude = sqrt(position.cov_position(1, 1));
+    solution.deviationAltitude = sqrt(position.cov_position(2, 2));
+    return solution;
+}
+
 base::samples::RigidBodyState UTMConverter::convertToNWU(const gps_base::Solution &solution) const
 {
     return convertToNWU(convertToUTM(solution));
+}
+
+gps_base::Solution UTMConverter::convertNWUToGPS(const base::samples::RigidBodyState& nwu) const
+{
+    return convertUTMToGPS(convertNWUToUTM(nwu));
 }
 
 base::samples::RigidBodyState UTMConverter::convertToNWU(const base::samples::RigidBodyState &utm) const
@@ -105,4 +165,16 @@ base::samples::RigidBodyState UTMConverter::convertToNWU(const base::samples::Ri
     position.position -= origin;
     std::swap(position.cov_position(0, 0), position.cov_position(1, 1));
     return position;
+}
+
+base::samples::RigidBodyState UTMConverter::convertNWUToUTM(const base::samples::RigidBodyState &nwu) const
+{
+    base::samples::RigidBodyState utm = nwu;
+    auto position = nwu.position + origin;
+    double northing  = position.x();
+    double easting = 1000000 - position.y();
+    utm.position.x() = easting;
+    utm.position.y() = northing;
+    std::swap(utm.cov_position(0, 0), utm.cov_position(1, 1));
+    return utm;
 }
