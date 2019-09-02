@@ -38,7 +38,7 @@ namespace gps_base
         double deviationLongitude;
         double deviationAltitude;
         Solution()
-	        : positionType(INVALID) {}
+            : positionType(INVALID) {}
     };
 
     struct Position {
@@ -50,8 +50,8 @@ namespace gps_base
         double altitude;
         double geoidalSeparation;
         double ageOfDifferentialCorrections;
-	    Position()
-	        : positionType(INVALID) {}
+        Position()
+            : positionType(INVALID) {}
     };
 
     struct Errors {
@@ -72,7 +72,10 @@ namespace gps_base
     enum CONSTELLATIONS {
         CONSTELLATION_GPS,
         CONSTELLATION_SBAS,
-        CONSTELLATION_GLONASS
+        CONSTELLATION_GLONASS,
+        CONSTELLATION_GALILEO,
+        CONSTELLATION_BEIDOU,
+        CONSTELLATION_QZSS
     };
     struct Satellite {
         int PRN;
@@ -84,15 +87,21 @@ namespace gps_base
         {
             if (prn < 33)
                 return CONSTELLATION_GPS;
-            else if (prn < 65)
+            else if ((prn < 65) || ((prn >= 152) && (prn <= 158)))
                 return CONSTELLATION_SBAS;
+            else if ((prn >= 301) && (prn <= 336))
+                return CONSTELLATION_GALILEO;
+            else if ((prn >= 401) && (prn <= 437))
+                return CONSTELLATION_BEIDOU;
+            else if ((prn >= 193) && (prn <= 202))
+                return CONSTELLATION_QZSS;
             else
                 return CONSTELLATION_GLONASS;
         }
 
         CONSTELLATIONS getConstellation() const
         {
-	        return getConstellationFromPRN(PRN);
+            return getConstellationFromPRN(PRN);
         }
     };
 
