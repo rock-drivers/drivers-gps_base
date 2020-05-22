@@ -45,9 +45,12 @@ UTMConversionParameters UTMConverter::getParameters() const
 void UTMConverter::createCoTransform()
 {
     OGRSpatialReference latlonSRS;
-    OGRSpatialReference utmSRS;
-
     latlonSRS.SetWellKnownGeogCS("WGS84");
+#if GDAL_VERSION_MAJOR >= 3
+    latlonSRS.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+#endif
+
+    OGRSpatialReference utmSRS;
     utmSRS.SetWellKnownGeogCS("WGS84");
     utmSRS.SetUTM(this->utm_zone, this->utm_north);
 
