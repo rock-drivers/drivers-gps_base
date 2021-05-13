@@ -25,6 +25,12 @@ UTMConverter::UTMConverter(UTMConversionParameters const& parameters)
     createCoTransform();
 }
 
+UTMConverter::~UTMConverter()
+{
+    delete latlon2utm;
+    delete utm2latlon;
+}
+
 void UTMConverter::setParameters(UTMConversionParameters const& parameters)
 {
     utm_zone = parameters.utm_zone;

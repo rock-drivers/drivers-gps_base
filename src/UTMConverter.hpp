@@ -22,6 +22,8 @@ namespace gps_base
             UTMConverter();
             UTMConverter(UTMConversionParameters const& parameters);
 
+            ~UTMConverter();
+
             void setParameters(UTMConversionParameters const& parameters);
 
             UTMConversionParameters getParameters() const;
