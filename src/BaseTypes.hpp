@@ -9,34 +9,59 @@ namespace gps_base
 {
     enum GPS_SOLUTION_TYPES
     {
-        NO_SOLUTION    = 0, //No GPS solution found
-        AUTONOMOUS_2D  = 6, //Like AUTONOMOUS, but solution doesn't provide height information. Is 6 for historical reasons
-        AUTONOMOUS     = 1, //No correction
-        DIFFERENTIAL   = 2, //Atmospheric correction is used e.g. as provided by a Satellite or Ground Based Augmentation System
-        INVALID        = 3, //Correction result is invalid
-        RTK_FIXED      = 4, //Complete RTK correction
-        RTK_FLOAT      = 5  //Real Time Kinematics correction with undetermined phase shift
+        NO_SOLUTION    = 0, //! No GPS solution found
+        AUTONOMOUS_2D  = 6, //! Like AUTONOMOUS, but solution doesn't provide height information. Is 6 for historical reasons
+        AUTONOMOUS     = 1, //! Solution not using differential corrections
+        DIFFERENTIAL   = 2, //! Atmospheric correction is used e.g. as provided by a Satellite or Ground Based Augmentation System
+        INVALID        = 3, //! Correction result is invalid
+        RTK_FIXED      = 4, //! RTK solution
+        RTK_FLOAT      = 5  //! RTK solution with undetermined phase shift
     };
 
+    /** @deprecated do not use in new code */
     struct Time {
         base::Time cpu_time;
         base::Time gps_time;
         double processing_latency;
     };
 
+    /** Representation of a position returned by a GNSS device */
     struct Solution {
         base::Time time;
+        /** Latitude in degrees
+         *
+         * It is in degrees for historical reasons
+         */
         double latitude;
+        /** Longitude in degrees
+         *
+         * It is in degrees for historical reasons
+         */
         double longitude;
+        /** Type of solution */
         GPS_SOLUTION_TYPES positionType;
+        /** How many satellites are used in this solution */
         int noOfSatellites;
+        /** Altitude above mean sea level */
         double altitude;
+        /** Geoidal separation at this location */
         double geoidalSeparation;
+        /** Age of differential corrections used in this solution if any
+         *
+         * Set to base::unknown<double> if no differential corrections are available
+         */
         double ageOfDifferentialCorrections;
 
+        /** Error on the east-west axis, in meters
+         */
         double deviationLatitude;
+        /** Error on the north-south axis, in meters
+         */
         double deviationLongitude;
+        /** Error in altitude, in meters
+         */
         double deviationAltitude;
+
         Solution()
             : positionType(INVALID) {}
     };
@@ -110,6 +135,7 @@ namespace gps_base
         std::vector < gps_base::Satellite> knownSatellites;
     };
 
+    /** @deprecated do not use in new code */
     struct UserDynamics {
         int hSpeed;
         int hAccel;
@@ -119,6 +145,7 @@ namespace gps_base
             : hSpeed(0), hAccel(0), vSpeed(0), vAccel(0) {}
     };
 
+    /** Full quality information about the solution */
     struct ConstellationInfo {
         gps_base::SolutionQuality quality;
         gps_base::SatelliteInfo  satellites;
