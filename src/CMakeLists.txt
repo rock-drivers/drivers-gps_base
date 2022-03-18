@@ -5,9 +5,10 @@ include_directories(${GDAL_INCLUDE_DIRS})
 link_directories(${GDAL_LIBRARY_DIRS})
 
 rock_library(gps_base
-    SOURCES UTMConverter.cpp
-    HEADERS UTMConverter.hpp BaseTypes.hpp
-    DEPS_PKGCONFIG base-types)
+    SOURCES UTMConverter.cpp rtcm3.cpp
+    HEADERS UTMConverter.hpp BaseTypes.hpp rtcm3.hpp
+    DEPS_PKGCONFIG base-types
+)
 
 target_link_libraries(gps_base ${GDAL_LIBRARIES})
 
