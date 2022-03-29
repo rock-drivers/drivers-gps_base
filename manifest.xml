@@ -10,6 +10,7 @@
   <depend package="base/types" />
   <depend package="gdal" />
   <depend package="proj" />
+  <depend package="drivers/iodrivers_base" />
 
   <test_depend package="boost" />
 </package>
