@@ -25,7 +25,7 @@ namespace gps_base
         double processing_latency;
     };
 
-    /** Representation of a position returned by a GNSS device */
+    /** Representation of a position returned by a GNSS device, in WGS84 */
     struct Solution {
         base::Time time;
         /** Latitude in degrees
@@ -44,7 +44,11 @@ namespace gps_base
         int noOfSatellites;
         /** Altitude above mean sea level */
         double altitude;
-        /** Geoidal separation at this location */
+        /** Geoidal separation at this location
+         *
+         * The difference between the WGS-84 earth ellipsoid and mean-sea-level
+         * (geoid), "-" means mean-sea-level below ellipsoid
+         */
         double geoidalSeparation;
         /** Age of differential corrections used in this solution if any
          *
