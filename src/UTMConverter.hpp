@@ -21,8 +21,10 @@ namespace gps_base
         public:
             UTMConverter();
             UTMConverter(UTMConversionParameters const& parameters);
-
+            UTMConverter(UTMConverter const& src);
+            UTMConverter& operator=(UTMConverter const& src);
             ~UTMConverter();
+
 
             void setParameters(UTMConversionParameters const& parameters);
 
