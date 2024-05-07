@@ -31,6 +31,28 @@ UTMConverter::~UTMConverter()
     delete utm2latlon;
 }
 
+UTMConverter::UTMConverter(UTMConverter const& src)
+    : utm_zone(src.utm_zone)
+    , utm_north(src.utm_north)
+    , origin(src.origin)
+    , utm2latlon(nullptr)
+    , latlon2utm(nullptr) {
+    createCoTransform();
+}
+
+UTMConverter& UTMConverter::operator=(UTMConverter const& src) {
+    if (this == &src) {
+        return *this;
+    }
+
+    utm_zone = src.utm_zone;
+    utm_north = src.utm_north;
+    origin = src.origin;
+    createCoTransform();
+
+    return *this;
+}
+
 void UTMConverter::setParameters(UTMConversionParameters const& parameters)
 {
     utm_zone = parameters.utm_zone;

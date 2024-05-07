@@ -1,7 +1,9 @@
 #include <boost/test/unit_test.hpp>
 #include <gps_base/UTMConverter.hpp>
+#include <memory>
 
 using namespace gps_base;
+using namespace std;
 
 Solution fixtureSolution(base::Time const& time = base::Time::now()) {
     gps_base::Solution solution;
@@ -19,6 +21,72 @@ Solution fixtureSolution(base::Time const& time = base::Time::now()) {
 BOOST_AUTO_TEST_CASE(it_should_not_crash_when_instantiated)
 {
     gps_base::UTMConverter converter;
+}
+
+BOOST_AUTO_TEST_CASE(it_supports_being_copied_by_construction)
+{
+    auto solution = fixtureSolution();
+
+    unique_ptr<gps_base::UTMConverter> converter;
+    {
+        gps_base::UTMConverter src;
+        src.setUTMZone(24);
+        src.setUTMNorth(false);
+        src.setNWUOrigin(base::Position(8550000, 400000, 0));
+        converter = make_unique<gps_base::UTMConverter>(src);
+    }
+
+    base::samples::RigidBodyState pos;
+    pos = converter->convertToUTM(solution);
+    BOOST_REQUIRE_CLOSE(pos.position.x(), 537956.57943, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.y(), 8556494.7274, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.z(), 2, 0.0001);
+    solution = converter->convertUTMToGPS(pos);
+    BOOST_REQUIRE_CLOSE(solution.latitude, -13.057361, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.longitude, -38.649902, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.altitude, 2, 0.0001);
+
+    pos = converter->convertToNWU(solution);
+    BOOST_REQUIRE_CLOSE(pos.position.x(), 6494.7274, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.y(), 62043.420570012648, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.z(), 2, 0.0001);
+    solution = converter->convertNWUToGPS(pos);
+    BOOST_REQUIRE_CLOSE(solution.latitude, -13.057361, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.longitude, -38.649902, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.altitude, 2, 0.0001);
+}
+
+BOOST_AUTO_TEST_CASE(it_supports_being_assigned)
+{
+    auto solution = fixtureSolution();
+
+    gps_base::UTMConverter converter;
+    {
+        gps_base::UTMConverter src;
+        src.setUTMZone(24);
+        src.setUTMNorth(false);
+        src.setNWUOrigin(base::Position(8550000, 400000, 0));
+        converter = src;
+    }
+
+    base::samples::RigidBodyState pos;
+    pos = converter.convertToUTM(solution);
+    BOOST_REQUIRE_CLOSE(pos.position.x(), 537956.57943, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.y(), 8556494.7274, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.z(), 2, 0.0001);
+    solution = converter.convertUTMToGPS(pos);
+    BOOST_REQUIRE_CLOSE(solution.latitude, -13.057361, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.longitude, -38.649902, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.altitude, 2, 0.0001);
+
+    pos = converter.convertToNWU(solution);
+    BOOST_REQUIRE_CLOSE(pos.position.x(), 6494.7274, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.y(), 62043.420570012648, 0.0001);
+    BOOST_REQUIRE_CLOSE(pos.position.z(), 2, 0.0001);
+    solution = converter.convertNWUToGPS(pos);
+    BOOST_REQUIRE_CLOSE(solution.latitude, -13.057361, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.longitude, -38.649902, 0.0001);
+    BOOST_REQUIRE_CLOSE(solution.altitude, 2, 0.0001);
 }
 
 BOOST_AUTO_TEST_CASE(it_converts_the_position_from_latlon_into_utm_and_nwu)
